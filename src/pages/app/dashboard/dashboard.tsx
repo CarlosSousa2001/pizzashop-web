@@ -5,6 +5,7 @@ import { MouthOrdersAmountCard } from './moth-orders-amount-card'
 import { DaysOrdersAmount } from './day-orders-amount-card'
 import { MothCanceledOrdersAmount } from './month-canceled-orders-amount.-card'
 import { RevenueChart } from './revenue-chart'
+import { PopularProducts } from './popular-products-chart'
 export function Dashboard() {
   return (
     <>
@@ -21,6 +22,7 @@ export function Dashboard() {
 
         <div className='grid grid-cols-9 gap-4'>
             <RevenueChart/>
+            <PopularProducts/>
         </div>
       </div>
     </>

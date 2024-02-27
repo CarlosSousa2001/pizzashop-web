@@ -27,6 +27,7 @@ export function RevenueChart() {
           <XAxis dataKey="date" axisLine={false} tickLine={false} dy={16}/>
           <YAxis stroke="#888" axisLine={false} tickLine={false} tickFormatter={(value:number) => value.toLocaleString('pt-BR',{style: 'currency', currency:'BRL'})}/>
           <Line type="linear" strokeWidth={2} dataKey="revenue" stroke={colors.violet['500']}/>
+          <CartesianGrid vertical={false} className="stroke-muted"/>
         </LineChart>
       </ResponsiveContainer>
       </CardContent>
