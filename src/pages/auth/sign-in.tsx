@@ -5,7 +5,8 @@ import { Helmet } from 'react-helmet-async'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import {toast } from 'sonner'
+import { toast } from 'sonner'
+import { Link } from 'react-router-dom'
 
 const SigninFormSchema = z.object({
   email: z.string().email()
@@ -15,7 +16,7 @@ type SigninFormData = z.infer<typeof SigninFormSchema>
 
 export function SignIn() {
 
-  const { register, handleSubmit, formState:{isSubmitting} } = useForm<SigninFormData>({
+  const { register, handleSubmit, formState: { isSubmitting } } = useForm<SigninFormData>({
     resolver: zodResolver(SigninFormSchema)
   })
 
@@ -32,6 +33,11 @@ export function SignIn() {
     <>
       <Helmet title='Login' />
       <div className='p-8 '>
+        <Button variant="ghost" asChild className='absolute right-8 top-8 '>
+          <Link to="/sign-up" className=''>
+            Novo estabelecimento
+          </Link>
+        </Button>
         <div className='w-[350px] flex flex-col justify-center gap-6'>
           <div className='flex flex-col gap-2 text-center'>
             <h1 className='text-2xl font-semibold tracking-tight'>Acessar Painel</h1>
