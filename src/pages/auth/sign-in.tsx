@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet-async'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import {toast } from 'sonner'
 
 const SigninFormSchema = z.object({
   email: z.string().email()
@@ -19,7 +20,12 @@ export function SignIn() {
   })
 
   async function handleSignIn(data: SigninFormData) {
-      
+
+    await new Promise(x => setTimeout(x, 2000))
+
+    console.log(data)
+
+    toast.success("Enviamos um link de autenticação para o seu e-mail.")
   }
 
   return (
