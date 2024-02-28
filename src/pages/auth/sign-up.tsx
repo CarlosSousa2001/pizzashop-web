@@ -7,6 +7,8 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {toast } from 'sonner'
 import { Link, useNavigate } from 'react-router-dom'
+import { useMutation } from '@tanstack/react-query'
+import { registerRestaurant } from '@/api/register-restaurant'
 
 const SignUpFormSchema = z.object({
   restaurantName: z.string(),
@@ -25,15 +27,27 @@ export function SignUp() {
     resolver: zodResolver(SignUpFormSchema)
   })
 
+  const {mutateAsync: registerRestaurantDn} = useMutation({
+    mutationFn: registerRestaurant
+  })
+
   async function handleSignUp(data: SignUpFormData) {
-
-    await new Promise(x => setTimeout(x, 2000))
-
-    console.log(data)
-
-    navigate('/sign-in')
-
-    toast.success("Enviamos um link de autenticação para o seu e-mail.")
+    try {
+      await registerRestaurantDn({
+        restaurantName: data.restaurantName,
+        managerName: data.managerName,
+        email:data.email,
+        phone:data.phone
+      }) 
+      toast.success("Faça login", {
+        action: {
+          label:'Login',
+          onClick: () => navigate(`/sign-in?email=${data.email}`)
+        }
+      })
+    } catch (error) {
+      toast.error("Credenciais inválidas")
+    }
   }
 
   return (
