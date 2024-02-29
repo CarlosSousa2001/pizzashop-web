@@ -4,7 +4,7 @@
 
 ### Tecnologia usadas
 - React
-- typescrip
+- typescript
 - React Hook Query
 - React Hook Form
 - Zod
