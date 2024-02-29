@@ -14,7 +14,7 @@ import { DialogClose } from "@radix-ui/react-dialog";
 
 const storeProfileSchema = z.object({
   name: z.string(),
-  description: z.string()
+  description: z.string().nullable()
 })
 
 type StoreProfileData = z.infer<typeof storeProfileSchema>
@@ -39,18 +39,62 @@ export function StoreProfileDialog() {
     }
   })
 
+  // const { mutateAsync: updateProfileFn } = useMutation({
+  //   mutationFn: updateProfile,
+  //   // agora nos vamos atualizar os dados que estao em cache, ja que a ultima requisição ja contem tudo que eu preciso pra atulizar os dados
+  //   // quando eu mudar ao as alterações serao refleitas nos componentes que usam essa query
+  //   onSuccess(_, {name, description}){
+  //       const cached = queryClient.getQueryData<GetManagerRestaurantResposne>(['managed-restaurant'])
+
+  //       if(cached){
+  //           queryClient.setQueryData(['managed-restaurant'], {
+  //             ...cached,
+  //             name,
+  //             description
+  //           })
+  //       }
+  //   }
+  // })
+
+  function updateManagedRestaurntCache({name, description}: StoreProfileData){
+    const cached = queryClient.getQueryData<GetManagerRestaurantResposne>(['managed-restaurant'])
+
+    if(cached){
+        queryClient.setQueryData(['managed-restaurant'], {
+          ...cached,
+          name,
+          description
+        })
+    }
+    // Estou retornando os dados desse cache antes desse restaunt ser atualizado -> preciso desses dados pra trabalhar com o 
+    // eles no onError no useMutation
+    return {cached}
+  }
+  // const { mutateAsync: updateProfileFn } = useMutation({
+  //   mutationFn: updateProfile,
+  //     // ao usar o onMutate no lugar do onSuccess, essa função dispara assim quando eu clico no botao de salvar, nao so no sucesso
+  //     // ou seja dispara antes de requisição ser realmente concluída
+  //     // Casos de uso -> requsições com baixo risco de falha -- poucos campos
+  //   onMutate({name, description}){
+  //     updateManagedRestaurntCache({name, description})
+  //   },
+  // })
+
   const { mutateAsync: updateProfileFn } = useMutation({
     mutationFn: updateProfile,
-    onSuccess(_, {name, description}){
-        const cached = queryClient.getQueryData<GetManagerRestaurantResposne>(['managed-restaurant'])
+      // Quando der error ao usar onMutate
+      // Vamos utilizar o context pela função onError() -> 
+      // ao usamos os context com os dados recebido pelo return na função updateManagedRestaurntCache
+      // podemos ter esse dados antes da requisição ser feita, e caso der erro ele volta com o item anterior
+    onMutate({name, description}){
+     const {cached} = updateManagedRestaurntCache({name, description})
 
-        if(cached){
-            queryClient.setQueryData(['managed-restaurant'], {
-              ...cached,
-              name,
-              description
-            })
-        }
+     return {previousProfile: cached}
+    },
+    onError(_, __, context){
+      if(context?.previousProfile){
+        updateManagedRestaurntCache(context.previousProfile)
+      }
     }
   })
 
