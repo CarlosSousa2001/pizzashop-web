@@ -1,3 +1,4 @@
+import { getMonthCanceledOrdersAmount } from "@/api/get-month-canceled-orders-amount"
 import {
   Card,
   CardContent,
@@ -6,9 +7,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { useQuery } from "@tanstack/react-query"
 import { DollarSign } from "lucide-react"
 
 export function MothCanceledOrdersAmount() {
+  const { data: MonthCanceledOrdersAmountFn } = useQuery({
+    queryKey: ['metrics', 'month-cancel-amount'],
+    queryFn: getMonthCanceledOrdersAmount
+  })
   return (
     <Card>
     <CardHeader className='flex-row items-center justify-between space-y-0 pb-2'>
@@ -16,10 +22,18 @@ export function MothCanceledOrdersAmount() {
       <DollarSign className='h-4 w-4 text-muted-foreground' />
     </CardHeader>
     <CardContent className='space-y-1'>
-      <span className='text-2xl font-bold tracking-tight'>32</span>
-      <p className='text-xs text-muted-foreground'>
-        <span className='text-emerald-500-500 dark:text-emerald-400'>-2% em relação ao mês passado</span>
-      </p>
+    {MonthCanceledOrdersAmountFn && (
+          <>
+            <span className='text-2xl font-bold tracking-tight'>{MonthCanceledOrdersAmountFn.amount.toLocaleString('pt-BR')}</span>
+            <p className='text-xs text-muted-foreground'>
+                  {MonthCanceledOrdersAmountFn.diffFromLastMonth < 0 ? (
+                      <span className="text-emerald-500 dark:text-emerald-400">{MonthCanceledOrdersAmountFn.diffFromLastMonth}% em relação ao mês passado</span>
+                  ): (
+                    <span className="text-rose-500 dark:text-rose-500">+{MonthCanceledOrdersAmountFn.diffFromLastMonth}% em relação ao mês passado</span>
+                  )}
+            </p>
+          </>
+        )}
     </CardContent>
   </Card>
   )
