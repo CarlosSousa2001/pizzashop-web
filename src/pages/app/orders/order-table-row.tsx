@@ -18,6 +18,9 @@ import { OrderStatus } from "@/components/order-status"
 import {formatDistanceToNow} from 'date-fns'
 import {ptBR} from 'date-fns/locale'
 import { useState } from "react"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { cancelOrder } from "@/api/cancel-order"
+import { GetOrdersResponse } from "@/api/get-orders"
 
 export interface OrderTableRowPros {
   order:{
@@ -33,6 +36,32 @@ export interface OrderTableRowPros {
 export function OrderTableRow({order}: OrderTableRowPros) {
   // transformando o dialog em em componente controlado: motivo esta no comentario do componente order-details
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+
+  const queryClient = useQueryClient();
+  // estou percorrendo todas minhas listas que estao em cache, e quando ele encontrar o item com o id que foi enviado ele vai alterar os status
+  const {mutateAsync: cancelOrderFn} = useMutation({
+      mutationFn: cancelOrder,
+      onSuccess(_, {orderId}){
+          const ordersListCache = queryClient.getQueriesData<GetOrdersResponse>({
+            queryKey: ['orders']
+          })
+          ordersListCache.forEach(([cacheKey, cacheData])=>{
+              if(!cacheData){
+                    return;
+              }
+              queryClient.setQueryData<GetOrdersResponse>(cacheKey,{
+                ...cacheData,
+                orders: cacheData.orders.map((order) => {
+                  if(order.orderId === orderId){
+                      return {...order, status:'canceled'}
+                  }
+                  return order
+                })
+              })
+          })
+      }
+  })
+   
   return (
     <TableRow>
       <TableCell>
@@ -63,7 +92,7 @@ export function OrderTableRow({order}: OrderTableRowPros) {
         </Button>
       </TableCell>
       <TableCell>
-        <Button variant='ghost' size="xs">
+        <Button onClick={()=> cancelOrderFn({orderId:order.orderId})} disabled={!['pending', 'processing'].includes(order.status)} variant='ghost' size="xs">
           <X className="h-3 w-3 mr-2" />
           Cancelar
         </Button>
