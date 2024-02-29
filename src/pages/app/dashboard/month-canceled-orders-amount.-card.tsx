@@ -2,8 +2,6 @@ import { getMonthCanceledOrdersAmount } from "@/api/get-month-canceled-orders-am
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -24,7 +22,7 @@ export function MothCanceledOrdersAmount() {
     <CardContent className='space-y-1'>
     {MonthCanceledOrdersAmountFn && (
           <>
-            <span className='text-2xl font-bold tracking-tight'>{MonthCanceledOrdersAmountFn.amount.toLocaleString('pt-BR')}</span>
+            <span className='text-2xl font-bold tracking-tight'>{MonthCanceledOrdersAmountFn.amount}</span>
             <p className='text-xs text-muted-foreground'>
                   {MonthCanceledOrdersAmountFn.diffFromLastMonth < 0 ? (
                       <span className="text-emerald-500 dark:text-emerald-400">{MonthCanceledOrdersAmountFn.diffFromLastMonth}% em relação ao mês passado</span>

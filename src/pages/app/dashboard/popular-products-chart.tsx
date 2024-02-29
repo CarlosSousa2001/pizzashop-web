@@ -2,15 +2,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import colors from 'tailwindcss/colors'
 import {ResponsiveContainer, PieChart, XAxis, YAxis, CartesianGrid, Pie, Cell,} from 'recharts'
 import { BarChart } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { getPopularProducts } from "@/api/get-propular-products";
+const data = [
+  {products: 'Pepperonu', amount:40},
+  {products: 'Mussarela', amount:23},
+  {products: 'Quatro queijos', amount:70},
+  {products: 'Portuguesa', amount:20},
+  {products: 'Frango', amount:50},,
+]
+
 export function PopularProducts() {
 
-  const data = [
-    {products: 'Pepperonu', amount:40},
-    {products: 'Mussarela', amount:23},
-    {products: 'Quatro queijos', amount:70},
-    {products: 'Portuguesa', amount:20},
-    {products: 'Frango', amount:50},,
-  ]
+const {data: PopularProductsFn} = useQuery({
+  queryKey:['metrics', 'popular-products'],
+  queryFn: getPopularProducts
+})
 
   const COLORS = [
     colors.sky[500], colors.amber[500], colors.violet[500], colors.emerald[500],colors.rose[500],
@@ -25,9 +32,10 @@ export function PopularProducts() {
         </div>
       </CardHeader>
       <CardContent>
-      <ResponsiveContainer width="100%" height={240}>
+      {PopularProductsFn && (
+        <ResponsiveContainer width="100%" height={240}>
         <PieChart data={data} style={{fontSize:12}}>
-          <Pie data={data} dataKey="amount" name="roducts" cx="50%" cy="50%" 
+          <Pie data={PopularProductsFn} dataKey="amount" name="roducts" cx="50%" cy="50%" 
           outerRadius={86} 
           innerRadius={64}
           strokeWidth={8}
@@ -54,18 +62,19 @@ export function PopularProducts() {
                 textAnchor={x > cx ? 'start' : 'end'}
                 dominantBaseline="central"
               >
-                {data[index]?.products.substring(0, 12).concat('...')}(
+                {PopularProductsFn[index]?.product.substring(0, 12).concat('...')}(
                   {value})
               </text>
             )
           }}
           >
-            {data.map((_, index)=>(
+            {PopularProductsFn.map((_, index)=>(
               <Cell key={`cell-${index}`} fill={COLORS[index]} className="stroke-background hover: opacity-80" />
             ))}
           </Pie>     
         </PieChart>
       </ResponsiveContainer>
+      )}
       </CardContent>
     </Card>
   )
