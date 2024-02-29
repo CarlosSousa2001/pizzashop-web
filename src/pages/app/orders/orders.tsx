@@ -20,6 +20,11 @@ export function Orders() {
 
   const [searchParams, setSearchParams] = useSearchParams()
 
+  
+  const orderId = searchParams.get('orderId')
+  const customerName = searchParams.get('customerName')
+  const status = searchParams.get('status')
+
   // preciso remover 1 de cada index, ja que eu preciso começar o listagem de 1 e nao do zero
   // preciso fazer isso pois o usuário nao sabe que o array começa em zero
   const pageIndex = z.coerce.number()
@@ -29,8 +34,8 @@ export function Orders() {
   // eu preciso usar uma chave nessa queryKey dinamica, pois o reactquery nao roda a mesma requsição se foi feita uma anterior e os dados existam em cache
   // 
   const { data: result} = useQuery({
-    queryKey: ['orders', pageIndex],
-    queryFn: () => getOrders({pageIndex})
+    queryKey: ['orders', pageIndex, orderId, customerName, status],
+    queryFn: () => getOrders({pageIndex, orderId, customerName, status: status === 'all' ? null : status})
   })
 
   // estou "criando" essa chave 'page' pra dizer qual params estou manipulando
