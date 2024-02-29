@@ -12,15 +12,35 @@ import { OrderTableFilters } from "./order-table-filters";
 import { Pagination } from "@/components/pagination";
 import { useQuery } from "@tanstack/react-query";
 import { getOrders } from "@/api/get-orders";
+import { useSearchParams } from "react-router-dom";
+import { z } from "zod";
 
 
 export function Orders() {
 
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  // preciso remover 1 de cada index, ja que eu preciso começar o listagem de 1 e nao do zero
+  // preciso fazer isso pois o usuário nao sabe que o array começa em zero
+  const pageIndex = z.coerce.number()
+  .transform(page => page - 1)
+  .parse(searchParams.get('page') ?? '1')
+
+  // eu preciso usar uma chave nessa queryKey dinamica, pois o reactquery nao roda a mesma requsição se foi feita uma anterior e os dados existam em cache
+  // 
   const { data: result} = useQuery({
-    queryKey: ['orders'],
-    queryFn: getOrders
+    queryKey: ['orders', pageIndex],
+    queryFn: () => getOrders({pageIndex})
   })
 
+  // estou "criando" essa chave 'page' pra dizer qual params estou manipulando
+function handlePadination(pageIndex:number){
+  setSearchParams(state => {
+    state.set('page', (pageIndex + 1).toString())
+
+    return state
+  })
+}
   return (
     <>
       <Helmet title="Pedidos" />
@@ -50,7 +70,9 @@ export function Orders() {
               </TableBody>
             </Table>
           </div>
-          <Pagination pageIndex={0} totalCount={105} perPage={10}/>
+          {result && (
+            <Pagination onPageChange={handlePadination} pageIndex={result.meta.pageIndex} totalCount={result.meta.totalCount} perPage={result.meta.perPage}/>
+          )}
         </div>
       </div>
     </>
