@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/card"
 import { useQuery } from "@tanstack/react-query"
 import { DollarSign } from "lucide-react"
+import { MetricCardSkeleton } from "./metric-card-skeleton"
 
 export function MothCanceledOrdersAmount() {
   const { data: MonthCanceledOrdersAmountFn } = useQuery({
@@ -20,7 +21,7 @@ export function MothCanceledOrdersAmount() {
       <DollarSign className='h-4 w-4 text-muted-foreground' />
     </CardHeader>
     <CardContent className='space-y-1'>
-    {MonthCanceledOrdersAmountFn && (
+    {MonthCanceledOrdersAmountFn ? (
           <>
             <span className='text-2xl font-bold tracking-tight'>{MonthCanceledOrdersAmountFn.amount}</span>
             <p className='text-xs text-muted-foreground'>
@@ -31,6 +32,8 @@ export function MothCanceledOrdersAmount() {
                   )}
             </p>
           </>
+        ):(
+          <MetricCardSkeleton/>
         )}
     </CardContent>
   </Card>

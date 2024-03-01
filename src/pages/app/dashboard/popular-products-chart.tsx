@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import colors from 'tailwindcss/colors'
 import {ResponsiveContainer, PieChart, XAxis, YAxis, CartesianGrid, Pie, Cell,} from 'recharts'
-import { BarChart } from "lucide-react";
+import { BarChart, Loader2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getPopularProducts } from "@/api/get-propular-products";
 const data = [
@@ -32,7 +32,7 @@ const {data: PopularProductsFn} = useQuery({
         </div>
       </CardHeader>
       <CardContent>
-      {PopularProductsFn && (
+      {PopularProductsFn ? (
         <ResponsiveContainer width="100%" height={240}>
         <PieChart data={data} style={{fontSize:12}}>
           <Pie data={PopularProductsFn} dataKey="amount" name="roducts" cx="50%" cy="50%" 
@@ -74,6 +74,10 @@ const {data: PopularProductsFn} = useQuery({
           </Pie>     
         </PieChart>
       </ResponsiveContainer>
+      ): (
+        <div className="flex h-[240px] w-full items-center justify-center">
+            <Loader2 className="w-8 h-8 text-muted-foreground animate-spin"/>
+        </div>
       )}
       </CardContent>
     </Card>

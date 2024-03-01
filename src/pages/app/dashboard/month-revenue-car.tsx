@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card"
 import { useQuery } from "@tanstack/react-query"
 import { DollarSign } from "lucide-react"
+import { MetricCardSkeleton } from "./metric-card-skeleton"
 
 export function MouthRevenueCard() {
 
@@ -23,7 +24,7 @@ export function MouthRevenueCard() {
       <DollarSign className='h-4 w-4 text-muted-foreground' />
     </CardHeader>
     <CardContent className='space-y-1'>
-    {MonthRevenueFn && (
+    {MonthRevenueFn ? (
           <>
             <span className='text-2xl font-bold tracking-tight'>{(MonthRevenueFn.receipt / 100).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
             <p className='text-xs text-muted-foreground'>
@@ -34,6 +35,8 @@ export function MouthRevenueCard() {
                   )}
             </p>
           </>
+        ):(
+          <MetricCardSkeleton/>
         )}
     </CardContent>
   </Card>
